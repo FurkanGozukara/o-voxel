@@ -10,7 +10,7 @@
  */
 
 #pragma once
-#include <torch/extension.h>
+#include <torch/types.h>
 
 
 #define BLOCK_SIZE 256

@@ -1,6 +1,6 @@
+import os
 from setuptools import setup
 from torch.utils.cpp_extension import CUDAExtension, BuildExtension, IS_HIP_EXTENSION
-import os
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 BUILD_TARGET = os.environ.get("BUILD_TARGET", "auto")
@@ -21,6 +21,16 @@ if not IS_HIP:
 else:
     archs = os.getenv("GPU_ARCHS", "native").split(";")
     cc_flag = [f"--offload-arch={arch}" for arch in archs]
+
+
+def get_extra_compile_args():
+    if os.name == "nt":
+        cxx_flags = ["/O2"]
+    else:
+        cxx_flags = ["-O3", "-std=c++17"]
+
+    nvcc_flags = ["-O3", "-std=c++17"] + cc_flag
+    return {"cxx": cxx_flags, "nvcc": nvcc_flags}
 
 setup(
     name="o_voxel",
@@ -55,10 +65,7 @@ setup(
             include_dirs=[
                 os.path.join(ROOT, "third_party/eigen"),
             ],
-            extra_compile_args={
-                "cxx": ["-O3", "-std=c++17"],
-                "nvcc": ["-O3","-std=c++17"] + cc_flag,
-            }
+            extra_compile_args=get_extra_compile_args(),
         )
     ],
     cmdclass={

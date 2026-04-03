@@ -1,4 +1,4 @@
-#include <torch/extension.h>
+#include <torch/types.h>
 #include "api.h"
 #include "z_order.h"
 #include "hilbert.h"
